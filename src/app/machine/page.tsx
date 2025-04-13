@@ -9,17 +9,26 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import geminiTest from "../api/geminiCalls";
 
 const Page = () => {
   const [textValue, setTextValue] = useState("");
-  const handleSubmit = (e: React.FormEvent) => {
+  const [geminiReply, setGeminiReply] = useState("reply will be here");
+  // useEffect(()=> {
+  // },[geminiReply])
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    const res = await geminiTest(textValue);
     console.log(textValue);
+    const replyText = await res;
+    console.log(replyText);
+    setGeminiReply(replyText);
   };
   const badWordDict = ["fuck", "shit", "hell"];
   return (
+    <>
+    
     <Box
       sx={{
         p: 2,
@@ -35,8 +44,8 @@ const Page = () => {
       <Typography variant="h6">
         {"This is an AI voice generator for Twilio."}
       </Typography>
-      <Accordion expandIcon={<ArrowDropDownIcon />}>
-        <AccordionSummary>
+      <Accordion>
+        <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
           <Typography variant="h6">{"Here's how it works:"}</Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -79,7 +88,33 @@ const Page = () => {
         value={textValue}
         onChange={(e) => setTextValue(e.target.value)}
         error={badWordDict.includes(textValue)}
-      />
+        helperText={badWordDict.includes(textValue) ? "Please avoid using bad words." : ""}
+        // change color of input text to white if in dark mode
+        sx={{
+          input: { color: "white" },
+          label: { color: "white" },
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: "white",
+            },
+            "&:hover fieldset": {
+              borderColor: "gray",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "lightblue",
+            },
+          },
+          "& .MuiInputLabel-root": {
+            color: "white",
+          },
+          "& .MuiInputLabel-root.Mui-focused": {
+            color: "lightblue",
+          },
+          "& .MuiInputBase-input::placeholder": {
+            color: "gray",
+          },
+        }}
+            />
       <Button
         variant="contained"
         color="primary"
@@ -87,7 +122,20 @@ const Page = () => {
       >
         Submit
       </Button>
+      <Box sx={{ mt:6, width: "100%" }}>
+
+      <Typography variant="h6" sx={{textAlign:"left"}}>Gemini Reply:</Typography>
+      <Box sx= {{ml:4}}>
+      {geminiReply.split("\n").map((line, index) => (
+        <Typography key={index} variant="body1">
+          {line}
+        </Typography>
+      ))}
+      </Box>
+      </Box>
     </Box>
+    
+    </>
   );
 };
 
