@@ -18,6 +18,7 @@ import { remark } from 'remark'
 import remarkToc from 'remark-toc'
 import ReactMarkdown from 'react-markdown'
 import AudioPlayer from './components/AudioPlayer'
+import TwilioBox from './components/TwilioBox'
 // import TwilioBox from './components/TwilioBox'
 
 const Page = () => {
@@ -262,7 +263,7 @@ const Page = () => {
                             <Typography variant='h6'>Send it to Twilio and Call Yourself</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            {/* <TwilioBox audioURL={audioURL} audioBlob={audioBlob} /> */}
+                            <TwilioBox audioUrl={audioUrl} />
                         </AccordionDetails>
                     </Accordion>
                 </Box>
