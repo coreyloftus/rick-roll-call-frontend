@@ -43,8 +43,7 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
     return (
         <>
             <Box>
-                <Typography>audio player here</Typography>
-                <Typography>audioUrl: {audioUrl}</Typography>
+                {/* <Typography>audioUrl: {audioUrl}</Typography> */}
                 {/* player box */}
                 <Box>
                     <audio ref={audioRef} src={audioUrl}></audio>
@@ -52,7 +51,7 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
                         {isPlaying ? <PauseCircleOutline /> : <PlayArrowOutlined />}
                     </IconButton>
                     <IconButton onClick={handleMuteUnmute}>{isMuted ? <VolumeMute /> : <VolumeUp />}</IconButton>
-                    <Box>
+                    {/* <Box>
                         <Slider
                             value={volume}
                             onChange={(e) => handleVolumeChange((e.target as HTMLInputElement)?.valueAsNumber)}
@@ -61,7 +60,7 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
                             min={0}
                             max={1}
                         />
-                    </Box>
+                    </Box> */}
                 </Box>
             </Box>
         </>

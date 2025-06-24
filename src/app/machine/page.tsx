@@ -27,9 +27,9 @@ const Page = () => {
     const [sanityCheckTextValue, setSanityCheckTextValue] = useState('')
     const [voiceInputText, setVoiceInputText] = useState('')
     const [sanityCheckText, setSanityCheckText] = useState('')
-    // const [audioUrl, setAudioUrl] = useState<string>('')
+    const [audioUrl, setAudioUrl] = useState<string>('')
     // const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
-    const testAudioPath = '/audio/obi-wan.mp3'
+    // const testAudioPath = '/audio/obi-wan.mp3'
 
     // setAudioUrl(testAudioPath)
 
@@ -69,8 +69,9 @@ const Page = () => {
         e.preventDefault()
         const res = await geminiAudio(voiceInputText)
         try {
-            // setAudioUrl(res)`
+            console.log('Audio URL:', res)
             localStorage.setItem('geminiAudioUrl', JSON.stringify(res))
+            setAudioUrl(res)
         } catch (err) {
             console.error('Error saving to localStorage', err)
         }
@@ -252,7 +253,7 @@ const Page = () => {
                                 Submit
                             </Button>
                             <Box>
-                                <AudioPlayer audioUrl={testAudioPath} />
+                                <AudioPlayer audioUrl={audioUrl} />
                             </Box>
                         </AccordionDetails>
                     </Accordion>
