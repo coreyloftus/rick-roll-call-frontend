@@ -1,11 +1,11 @@
 import { PauseCircleOutline, PlayArrowOutlined, VolumeMute, VolumeUp } from '@mui/icons-material'
-import { Box, IconButton, Slider, Typography } from '@mui/material'
+import { Box, IconButton, Typography } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
 
 export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
     const audioRef = useRef<HTMLAudioElement | null>(null)
     const [isPlaying, setIsPlaying] = useState(false)
-    const [volume, setVolume] = useState(1)
+    // const [volume, setVolume] = useState(1)
     const [isMuted, setIsMuted] = useState(false)
 
     useEffect(() => {
@@ -24,15 +24,15 @@ export default function AudioPlayer({ audioUrl }: { audioUrl: string }) {
             setIsPlaying(!isPlaying)
         }
     }
-    const handleVolumeChange = (newValue: number) => {
-        setVolume(newValue)
-        setIsMuted(newValue === 0)
-    }
+    // const handleVolumeChange = (newValue: number) => {
+    //     setVolume(newValue)
+    //     setIsMuted(newValue === 0)
+    // }
     const handleMuteUnmute = () => {
         setIsMuted(!isMuted)
         if (audioRef.current) {
             audioRef.current.muted = !isMuted
-            setVolume(isMuted ? 1 : 0)
+            // setVolume(isMuted ? 1 : 0)
         }
     }
 
