@@ -22,9 +22,9 @@ import AudioPlayer from './components/AudioPlayer'
 
 const Page = () => {
     const [darkMode, setDarkMode] = useState(false)
-    const [textValue, setTextValue] = useState('')
+    const [geminiTextValue, setGeminiTextValue] = useState('')
     const [geminiReply, setGeminiReply] = useState('reply will be here')
-
+    const [sanityCheckTextValue, setSanityCheckTextValue] = useState('')
     const [voiceInputText, setVoiceInputText] = useState('')
     const [sanityCheckText, setSanityCheckText] = useState('')
     // const [audioUrl, setAudioUrl] = useState<string>('')
@@ -44,7 +44,7 @@ const Page = () => {
     const sanityCheckSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         try {
-            const res = await backendSanityCheck(textValue)
+            const res = await backendSanityCheck(sanityCheckTextValue)
             if (res) {
                 console.log('Sanity check response:', res)
                 setSanityCheckText(JSON.stringify(res))
@@ -57,8 +57,8 @@ const Page = () => {
 
     const handleTextSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        const res = await geminiTest(textValue)
-        console.log(textValue)
+        const res = await geminiTest(geminiTextValue)
+        console.log(geminiTextValue)
         const replyText = await res
         const processedMarkdown = await remark().use(remarkToc, { heading: 'contents', tight: true }).process(replyText)
         console.log(replyText)
@@ -104,10 +104,12 @@ const Page = () => {
                                 variant='outlined'
                                 fullWidth
                                 placeholder='Enter your text here...'
-                                value={textValue}
-                                onChange={(e) => setTextValue(e.target.value)}
-                                error={badWordDict.includes(textValue)}
-                                helperText={badWordDict.includes(textValue) ? 'Please avoid using bad words.' : ''}
+                                value={sanityCheckTextValue}
+                                onChange={(e) => setSanityCheckTextValue(e.target.value)}
+                                error={badWordDict.includes(sanityCheckTextValue)}
+                                helperText={
+                                    badWordDict.includes(sanityCheckTextValue) ? 'Please avoid using bad words.' : ''
+                                }
                                 // change color of input text to white if in dark mode
                                 sx={{
                                     input: { color: `${darkMode ? 'white' : 'black'}` },
@@ -158,10 +160,12 @@ const Page = () => {
                                 variant='outlined'
                                 fullWidth
                                 placeholder='Enter your text here...'
-                                value={textValue}
-                                onChange={(e) => setTextValue(e.target.value)}
-                                error={badWordDict.includes(textValue)}
-                                helperText={badWordDict.includes(textValue) ? 'Please avoid using bad words.' : ''}
+                                value={geminiTextValue}
+                                onChange={(e) => setGeminiTextValue(e.target.value)}
+                                error={badWordDict.includes(geminiTextValue)}
+                                helperText={
+                                    badWordDict.includes(geminiTextValue) ? 'Please avoid using bad words.' : ''
+                                }
                                 // change color of input text to white if in dark mode
                                 sx={{
                                     input: { color: `${darkMode ? 'white' : 'black'}` },
