@@ -13,12 +13,12 @@ import {
 } from '@mui/material'
 // import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useState, useEffect } from 'react'
-import { geminiAudio, geminiTest, backendSanityCheck } from '../api/geminiCalls'
+import { geminiTest, backendSanityCheck } from '../api/geminiCalls'
 import { remark } from 'remark'
 import remarkToc from 'remark-toc'
 import ReactMarkdown from 'react-markdown'
-import AudioPlayer from './components/AudioPlayer'
 import TwilioBox from './components/TwilioBox'
+import GenAudioBox from './components/GenAudioBox'
 // import TwilioBox from './components/TwilioBox'
 
 const Page = () => {
@@ -26,13 +26,8 @@ const Page = () => {
     const [geminiTextValue, setGeminiTextValue] = useState('')
     const [geminiReply, setGeminiReply] = useState('reply will be here')
     const [sanityCheckTextValue, setSanityCheckTextValue] = useState('')
-    const [voiceInputText, setVoiceInputText] = useState('')
     const [sanityCheckText, setSanityCheckText] = useState('')
-    const [audioUrl, setAudioUrl] = useState<string>('')
-    // const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
-    // const testAudioPath = '/audio/obi-wan.mp3'
-
-    // setAudioUrl(testAudioPath)
+    const [publicAudioUrl, setPublicAudioUrl] = useState('')
 
     useEffect(() => {
         const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -64,18 +59,6 @@ const Page = () => {
         const processedMarkdown = await remark().use(remarkToc, { heading: 'contents', tight: true }).process(replyText)
         console.log(replyText)
         setGeminiReply(processedMarkdown.toString())
-    }
-
-    const handleAudioTextSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        const res = await geminiAudio(voiceInputText)
-        try {
-            console.log('Audio URL:', res)
-            localStorage.setItem('geminiAudioUrl', JSON.stringify(res))
-            setAudioUrl(res)
-        } catch (err) {
-            console.error('Error saving to localStorage', err)
-        }
     }
 
     const badWordDict = ['fuck', 'shit', 'hell']
@@ -207,55 +190,12 @@ const Page = () => {
                             </Box>
                         </AccordionDetails>
                     </Accordion>
-
                     <Accordion>
                         <AccordionSummary>
                             <Typography variant='h6'>Audio Player</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Typography variant='body1'>
-                                {
-                                    'Input your text and click submit to generate the audio. The audio will be played below.'
-                                }
-                            </Typography>
-                            <TextField
-                                id='voice-input-text'
-                                label='Voice Input Text'
-                                variant='outlined'
-                                placeholder='Enter your text here...'
-                                value={voiceInputText}
-                                onChange={(e) => setVoiceInputText(e.target.value)}
-                                sx={{
-                                    input: { color: `${darkMode ? 'white' : 'black'}` },
-                                    label: { color: `${darkMode ? 'white' : 'black'}` },
-                                    '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            borderColor: `${darkMode ? 'white' : 'black'}`
-                                        },
-                                        '&:hover fieldset': {
-                                            borderColor: `${darkMode ? 'gray' : 'darkgray'}`
-                                        },
-                                        '&.Mui-focused fieldset': {
-                                            borderColor: `${darkMode ? 'lightblue' : 'blue'}`
-                                        }
-                                    },
-                                    '& .MuiInputLabel-root': {
-                                        color: `${darkMode ? 'white' : 'black'}`
-                                    },
-                                    '& .MuiInputLabel-root.Mui-focused': {
-                                        color: `${darkMode ? 'lightblue' : 'blue'}`
-                                    },
-                                    '& .MuiInputBase-input::placeholder': {
-                                        color: `${darkMode ? 'gray' : 'darkgray'}`
-                                    }
-                                }}
-                            ></TextField>
-                            <Button variant='contained' color='primary' onClick={(e) => handleAudioTextSubmit(e)}>
-                                Submit
-                            </Button>
-                            <Box>
-                                <AudioPlayer audioUrl={audioUrl} />
-                            </Box>
+                            <GenAudioBox setPublicAudioUrl={setPublicAudioUrl} />
                         </AccordionDetails>
                     </Accordion>
                     <Accordion>
@@ -263,7 +203,7 @@ const Page = () => {
                             <Typography variant='h6'>Send it to Twilio and Call Yourself</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <TwilioBox audioUrl={audioUrl} />
+                            <TwilioBox audioUrl={publicAudioUrl} />
                         </AccordionDetails>
                     </Accordion>
                 </Box>
