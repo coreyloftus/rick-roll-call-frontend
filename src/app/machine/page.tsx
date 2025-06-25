@@ -13,7 +13,7 @@ import {
 } from '@mui/material'
 // import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useState, useEffect } from 'react'
-import { geminiTest, backendSanityCheck } from '../api/geminiCalls'
+import { geminiTest, backendSanityCheck } from '../api/googleCalls'
 import { remark } from 'remark'
 import remarkToc from 'remark-toc'
 import ReactMarkdown from 'react-markdown'

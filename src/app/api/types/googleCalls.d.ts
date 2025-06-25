@@ -13,3 +13,9 @@ export interface GeminiTextTestResponse {
         usageMetadata: { candidatesTokenCount: number; promptTokenCount: number }
     }
 }
+
+export interface GCSFileUploadResponse {
+    signed_url: string
+    message: string
+    file_name: string
+}

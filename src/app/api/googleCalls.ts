@@ -1,4 +1,4 @@
-import { GeminiTextTestResponse } from './types/geminiCalls'
+import { GCSFileUploadResponse, GeminiTextTestResponse } from './types/googleCalls'
 
 const devBaseEndpoint = 'http://127.0.0.1:8000'
 export async function backendSanityCheck(req: string) {
@@ -56,19 +56,21 @@ export async function geminiAudio(req: string) {
 
 export async function gcsFileUpload(file: File) {
     console.log(`${gcsFileUpload.name} called with file:`, file)
+    // change this function to use formData and send the file as a form data object
+    const formData = new FormData()
+    formData.append('file', file)
     const res = await fetch(`${devBaseEndpoint}/gcs/upload`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*'
         },
-        body: JSON.stringify({ fileName: file.name, fileType: file.type })
+        body: formData
     })
     if (!res.ok) {
         console.error(`Failed to initiate GCS upload: ${res.statusText}`)
         throw new Error(`Failed to initiate GCS upload: ${res.statusText}`)
     }
-    const { uploadUrl } = await res.json()
-    console.log('GCS upload URL:', uploadUrl)
-    return uploadUrl
+    const resJSON = (await res.json()) as GCSFileUploadResponse
+    console.log('backend response:', resJSON)
+    return resJSON
 }

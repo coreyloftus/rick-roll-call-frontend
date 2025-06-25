@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Typography, Box, TextField, Button } from '@mui/material'
-import { gcsFileUpload, geminiAudio } from '@/app/api/geminiCalls'
+import { gcsFileUpload, geminiAudio } from '@/app/api/googleCalls'
 import AudioPlayer from './AudioPlayer'
 
 interface GenAudioBoxProps {
@@ -35,7 +35,7 @@ export default function GenAudioBox({ setPublicAudioUrl }: GenAudioBoxProps) {
         try {
             const response = await gcsFileUpload(file)
             console.log('GCS upload response:', response)
-            setPublicAudioUrl(response.uploadedFileUrl) // Assuming the response contains the uploaded file
+            setPublicAudioUrl(response.signed_url)
         } catch (e) {
             console.error(`Error uploading audio file to GCS:`, e)
         }
