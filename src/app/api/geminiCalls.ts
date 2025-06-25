@@ -53,3 +53,22 @@ export async function geminiAudio(req: string) {
     // Return the audio URL to the frontend
     return audioUrl
 }
+
+export async function gcsFileUpload(file: File) {
+    console.log(`${gcsFileUpload.name} called with file:`, file)
+    const res = await fetch(`${devBaseEndpoint}/gcs/upload`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({ fileName: file.name, fileType: file.type })
+    })
+    if (!res.ok) {
+        console.error(`Failed to initiate GCS upload: ${res.statusText}`)
+        throw new Error(`Failed to initiate GCS upload: ${res.statusText}`)
+    }
+    const { uploadUrl } = await res.json()
+    console.log('GCS upload URL:', uploadUrl)
+    return uploadUrl
+}
