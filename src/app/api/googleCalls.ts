@@ -1,20 +1,20 @@
 import { GCSFileUploadResponse, GeminiTextTestResponse } from './types/googleCalls'
 
 const devBaseEndpoint = 'http://127.0.0.1:8000'
-export async function backendSanityCheck(req: string) {
-    console.log('backendSanityCheck called with req:', req)
+export async function backendSanityCheck() {
+    console.log('backendSanityCheck called')
     const res = await fetch(`${devBaseEndpoint}/sanity_check`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify({ prompt: req })
+        }
     })
+    console.log('sanity check response:', res)
     if (!res.ok) {
-        throw new Error(`Failed to fetch sanity check: ${res.statusText}`)
+        throw new Error(`sanity check failed`)
     }
-    return await res.json()
+    return res
 }
 export async function geminiTest(req: string) {
     console.log('geminiTest called with req:', req)
