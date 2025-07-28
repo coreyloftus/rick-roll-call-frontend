@@ -172,7 +172,6 @@ export default function AudioPlayer({ audioData }: { audioData: AudioData | null
                 {/* Audio metadata for debugging */}
                 <Typography variant='caption' color='textSecondary' component='div'>
                     Format: {audioData.type} | Size: {(audioData.size / 1024).toFixed(1)}KB
-                    {audioData.contentType && ` | Backend Type: ${audioData.contentType}`}
                     {attemptedFormats.length > 0 && ` | Tried: ${attemptedFormats.join(', ')}`}
                 </Typography>
 

@@ -3,36 +3,44 @@ import { Typography, Box, TextField, Button } from '@mui/material'
 import { gcsFileUpload, geminiAudio } from '@/app/api/googleCalls'
 import AudioPlayer from './AudioPlayer'
 
+interface AudioData {
+    url: string
+    type: string
+    size: number
+    originalType: string
+    contentType: string | null
+}
+
 interface GenAudioBoxProps {
     setPublicAudioUrl: React.Dispatch<React.SetStateAction<string>>
 }
 export default function GenAudioBox({ setPublicAudioUrl }: GenAudioBoxProps) {
-    const [audioUrl, setAudioUrl] = useState<string>('')
+    const [audioData, setAudioData] = useState<AudioData | null>(null)
     const [voiceInputText, setVoiceInputText] = useState<string>('')
 
     const handleAudioTextSubmitToGemini = async (e: React.FormEvent) => {
         e.preventDefault()
-        const res = await geminiAudio(voiceInputText)
         try {
-            console.log('Audio URL:', res)
-            localStorage.setItem('geminiAudioUrl', JSON.stringify(res))
-            setAudioUrl(res)
+            const res = await geminiAudio(voiceInputText)
+            console.log('Audio data received:', res)
+            localStorage.setItem('geminiAudioData', JSON.stringify(res))
+            setAudioData(res)
         } catch (err) {
-            console.error('Error saving to localStorage', err)
+            console.error('Error getting audio from Gemini:', err)
         }
     }
 
-    const handleAudioFileUploadToGCS = async (e: React.FormEvent, audioUrl: string) => {
+    const handleAudioFileUploadToGCS = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!audioUrl) {
+        if (!audioData?.url) {
             console.error('No audio URL provided to upload to GCS.')
             return
         }
         // audioUrl is a blobURL, we need to convert it to a File object
-        const blobResponse = await fetch(audioUrl)
-        const blob = await blobResponse.blob()
-        const file = new File([blob], 'audio.mp3', { type: blob.type })
         try {
+            const blobResponse = await fetch(audioData.url)
+            const blob = await blobResponse.blob()
+            const file = new File([blob], 'audio.mp3', { type: blob.type })
             const response = await gcsFileUpload(file)
             console.log('GCS upload response:', response)
             setPublicAudioUrl(response.signed_url)
@@ -59,10 +67,15 @@ export default function GenAudioBox({ setPublicAudioUrl }: GenAudioBoxProps) {
                 Submit
             </Button>
             <Box>
-                <AudioPlayer audioUrl={audioUrl} />
+                <AudioPlayer audioData={audioData} />
             </Box>
             <Box>
-                <Button variant='contained' color='primary' onClick={(e) => handleAudioFileUploadToGCS(e, audioUrl)}>
+                <Button
+                    variant='contained'
+                    color='primary'
+                    onClick={handleAudioFileUploadToGCS}
+                    disabled={!audioData?.url}
+                >
                     Upload Audio to GCS
                 </Button>
             </Box>

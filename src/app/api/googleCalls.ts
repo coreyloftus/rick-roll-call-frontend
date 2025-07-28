@@ -18,7 +18,7 @@ export async function backendSanityCheck(req: string) {
 }
 export async function geminiTest(req: string) {
     console.log('geminiTest called with req:', req)
-    const res = await fetch(`${devBaseEndpoint}/gemini`, {
+    const res = await fetch(`${devBaseEndpoint}/gemini/stream`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -47,11 +47,44 @@ export async function geminiAudio(req: string) {
         throw new Error(`Failed to fetch audio: ${res.statusText}`)
     }
 
-    const audioBlob = await res.blob()
-    const audioUrl = URL.createObjectURL(audioBlob)
+    // Log response headers to understand the audio format
+    const contentType = res.headers.get('content-type')
+    console.log('Response Content-Type:', contentType)
+    console.log('Response headers:', [...res.headers.entries()])
 
-    // Return the audio URL to the frontend
-    return audioUrl
+    const audioBlob = await res.blob()
+    console.log('Audio blob type:', audioBlob.type)
+    console.log('Audio blob size:', audioBlob.size)
+
+    // Try to determine the correct MIME type based on content-type or make educated guess
+    let mimeType = audioBlob.type
+
+    if (!mimeType || mimeType === 'application/octet-stream') {
+        // Try to infer from Content-Type header
+        if (contentType) {
+            mimeType = contentType
+        } else {
+            // Default fallbacks - try common web-compatible formats
+            console.log('No MIME type detected, trying common audio formats')
+            // We'll try multiple formats in the component
+        }
+    }
+
+    console.log('Final MIME type:', mimeType)
+
+    // Create typed blob with the determined MIME type
+    const typedBlob = new Blob([audioBlob], { type: mimeType })
+    const audioUrl = URL.createObjectURL(typedBlob)
+    console.log('Created audio URL:', audioUrl)
+
+    // Return both the URL and metadata for debugging
+    return {
+        url: audioUrl,
+        type: mimeType,
+        size: audioBlob.size,
+        originalType: audioBlob.type,
+        contentType: contentType
+    }
 }
 
 export async function gcsFileUpload(file: File) {
