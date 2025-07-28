@@ -1,29 +1,29 @@
 'use client'
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Typography } from '@mui/material'
-import { useState } from 'react'
+import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Typography } from '@mui/material'
+import { useEffect, useState } from 'react'
 import { backendSanityCheck } from '../api/googleCalls'
-import ReactMarkdown from 'react-markdown'
 import TwilioBox from './components/TwilioBox'
 import GenAudioBox from './components/GenAudioBox'
 
 const Page = () => {
-    const [sanityCheckText, setSanityCheckText] = useState('')
+    const [sanityCheckSuccess, setSanityCheckSuccess] = useState(false)
     const [publicAudioUrl, setPublicAudioUrl] = useState('')
-    const [sanityCheckExpanded, setSanityCheckExpanded] = useState(true)
 
-    const sanityCheckSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+    const sanityCheckSubmit = async () => {
         try {
-            const res = await backendSanityCheck('')
-            if (res) {
-                console.log('Sanity check response:', res)
-                setSanityCheckText(JSON.stringify(res))
+            const res = await backendSanityCheck()
+            if (res.ok) {
+                setSanityCheckSuccess(true)
             }
         } catch (e) {
-            console.error('Error during sanity check:', e)
-            setSanityCheckText('Error during sanity check. Please try again.')
+            console.error('sanity check failed:', e)
+            setSanityCheckSuccess(false)
         }
     }
+
+    useEffect(() => {
+        sanityCheckSubmit()
+    }, [])
     return (
         <>
             <Box
@@ -37,36 +37,35 @@ const Page = () => {
                     minHeight: '100vh'
                 }}
             >
-                <Box sx={{ border: 1, p: 2, borderRadius: 2, width: '80vw' }}>
-                    <Typography variant='h4'>Welcome to Answering Machine</Typography>
-                    <Typography variant='h5'>{'This is an AI voice generator for Twilio.'}</Typography>
-                    {/* Accordion starts open by default */}
-                    <Accordion
-                        expanded={sanityCheckExpanded}
-                        onChange={() => setSanityCheckExpanded(!sanityCheckExpanded)}
-                    >
-                        <AccordionSummary>
-                            <Typography variant='h6'>Sanity check</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Box
+                <Box sx={{ border: 1, p: 2, borderRadius: 2, width: '85vw', gap: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                            <Typography sx={{ flexGrow: 1 }} variant='h4'>
+                                Rick Roll Call
+                            </Typography>
+                            <Badge
+                                color={sanityCheckSuccess ? 'success' : 'error'}
+                                variant='dot'
                                 sx={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    alignItems: 'center'
+                                    '& .MuiBadge-dot': {
+                                        transform: 'translate(50%, -200%)',
+                                        top: 0,
+                                        right: 0,
+                                        height: 16,
+                                        width: 16,
+                                        borderRadius: '50%'
+                                    }
                                 }}
-                            >
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
-                                    <Button variant='contained' color='primary' onClick={(e) => sanityCheckSubmit(e)}>
-                                        Submit
-                                    </Button>
-                                </Box>
-                                <Box sx={{ flexGrow: 1, width: '100%' }}>
-                                    <ReactMarkdown>{sanityCheckText}</ReactMarkdown>
-                                </Box>
-                            </Box>
-                        </AccordionDetails>
-                    </Accordion>
+                            />
+                        </Box>
+                        <Typography variant='h5'>
+                            {
+                                'Write some text. Enter your phone number. Then, get a call from an AI voice speaking out the text you wrote.'
+                            }
+                        </Typography>
+                        <Typography variant='body1'>{`Please only use this for good and mischief.`}</Typography>
+                    </Box>
+
                     {/* <Accordion>
                         <AccordionSummary>
                             <Typography variant='h6'>Gemini Connection Test</Typography>
