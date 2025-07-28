@@ -1,6 +1,6 @@
+import { devBaseEndpoint } from './constants'
 import { GCSFileUploadResponse, GeminiTextTestResponse } from './types/googleCalls'
 
-const devBaseEndpoint = 'http://127.0.0.1:8000'
 export async function backendSanityCheck() {
     console.log('backendSanityCheck called')
     const res = await fetch(`${devBaseEndpoint}/sanity_check`, {
