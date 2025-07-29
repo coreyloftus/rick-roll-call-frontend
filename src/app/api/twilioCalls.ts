@@ -1,17 +1,22 @@
 import { devBaseEndpoint } from './constants'
 import { TwilioStatusResponse } from './types/twilioCalls'
 
-export async function twilioCall(phoneNumber: string, audioUrl: string) {
-    console.log('twilioCall called with phoneNumber:', phoneNumber, 'and audioUrl:', audioUrl)
+interface TwilioCallParams {
+    to_phone_number: string
+    audio_file_url: string
+}
+export async function twilioCall(params: TwilioCallParams) {
+    console.log('twilioCall called with phoneNumber:', params.to_phone_number, 'and audioUrl:', params.audio_file_url)
     const res = await fetch(`${devBaseEndpoint}/twilio/call`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*'
         },
-        body: JSON.stringify({ phoneNumber, audioUrl })
+        body: JSON.stringify(params)
     })
-    console.log('twilioCall response:', res)
+    const resJSON = await res.json()
+    console.log('twilioCall response:', resJSON)
     return res
 }
 

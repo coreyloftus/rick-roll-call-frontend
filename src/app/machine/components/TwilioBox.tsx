@@ -24,14 +24,18 @@ export default function TwilioBox({ audioUrl }: TwilioBoxProps) {
     const [isAgreed, setIsAgreed] = useState(false)
     const termsLinkRef = useRef<HTMLButtonElement>(null)
     const [phoneNumber, setPhoneNumber] = useState('')
-
+    const [isPhoneValid, setIsPhoneValid] = useState(false)
     const consentLanguageText =
         "You understand that by inputting text into the provided box and initiating the service, you are requesting and consenting to receive an automated phone call to the number you provide. This call will play an audio message generated from the text you submitted using Google Gemini's Text-to-Audio service.You acknowledge that this service is a personal software engineering project and not a commercial or official service. You understand that standard message and data rates from your mobile carrier may apply to the call you receive. You confirm that the phone number you provide is your own and that you have the legal right to receive calls at that number. You also agree not to use this service for any unlawful, harmful, or abusive purposes, including but not limited to harassment, spam, or impersonation. Your use of this service is at your own risk. The developer of this project is not responsible for any issues or damages that may arise from your use of the service."
 
     const handleAudioToTwilio = async () => {
         console.log('handleAudioToTwilio called')
-        const res = await twilioCall(phoneNumber, audioUrl)
-        console.log('twilioCall response:', res)
+        const res = await twilioCall({ to_phone_number: phoneNumber, audio_file_url: audioUrl })
+        if (res.ok) {
+            console.log('twilioCall response:', res)
+        } else {
+            console.error('twilioCall response:', res)
+        }
     }
 
     const handleOpenTerms = () => {
@@ -81,9 +85,10 @@ export default function TwilioBox({ audioUrl }: TwilioBoxProps) {
                         // Limit length to reasonable phone number
                         if (cleaned.length <= 15) {
                             setPhoneNumber(cleaned)
+                            setIsPhoneValid(cleaned.length === 0 || /^\+?[\d\-()]{10,15}$/.test(cleaned))
                         }
                     }}
-                    error={phoneNumber.length > 0 && !/^\+?[\d\-()]{10,15}$/.test(phoneNumber)}
+                    error={!isPhoneValid}
                     placeholder='+1 (555) 555-5555'
                 />
                 <FormHelperText
@@ -136,7 +141,7 @@ export default function TwilioBox({ audioUrl }: TwilioBoxProps) {
                 variant='contained'
                 color='primary'
                 onClick={handleAudioToTwilio}
-                disabled={!isAgreed || !audioUrl}
+                disabled={!isAgreed || !audioUrl || !isPhoneValid}
                 sx={{ mb: 2 }}
             >
                 Send to Twilio
