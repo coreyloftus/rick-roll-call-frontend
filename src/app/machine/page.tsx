@@ -4,10 +4,17 @@ import { useEffect, useState } from 'react'
 import { backendSanityCheck } from '../api/googleCalls'
 import TwilioBox from './components/TwilioBox'
 import GenAudioBox from './components/GenAudioBox'
+import { getTwilioStatus } from '../api/twilioCalls'
 
 const Page = () => {
     const [sanityCheckSuccess, setSanityCheckSuccess] = useState(false)
     const [publicAudioUrl, setPublicAudioUrl] = useState('')
+    const [twilioStatus, setTwilioStatus] = useState(false)
+
+    const checkTwilioStatus = async () => {
+        const status = await getTwilioStatus()
+        setTwilioStatus(status)
+    }
 
     const sanityCheckSubmit = async () => {
         try {
@@ -23,6 +30,7 @@ const Page = () => {
 
     useEffect(() => {
         sanityCheckSubmit()
+        checkTwilioStatus()
     }, [])
     return (
         <>
@@ -132,7 +140,31 @@ const Page = () => {
                     </Accordion>
                     <Accordion>
                         <AccordionSummary>
-                            <Typography variant='h6'>Send it to Twilio and Call Yourself</Typography>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    gap: 2,
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    width: '100%'
+                                }}
+                            >
+                                <Typography variant='h6'>Make Twilio Call You</Typography>
+                                <Badge
+                                    color={twilioStatus ? 'success' : 'error'}
+                                    variant='dot'
+                                    sx={{
+                                        '& .MuiBadge-dot': {
+                                            transform: 'translate(50%, -150%)',
+                                            top: 0,
+                                            right: 0,
+                                            height: 16,
+                                            width: 16,
+                                            borderRadius: '50%'
+                                        }
+                                    }}
+                                />
+                            </Box>
                         </AccordionSummary>
                         <AccordionDetails>
                             <TwilioBox audioUrl={publicAudioUrl} />
