@@ -11,7 +11,8 @@ import {
     DialogContent,
     DialogActions,
     InputLabel,
-    Input
+    Input,
+    FormHelperText
 } from '@mui/material'
 import { useState, useRef } from 'react'
 
@@ -71,7 +72,31 @@ export default function TwilioBox({ audioUrl }: TwilioBoxProps) {
 
             <FormGroup sx={{ mb: 2 }}>
                 <InputLabel>Your Phone Number</InputLabel>
-                <Input type='tel' value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+                <Input
+                    type='tel'
+                    value={phoneNumber}
+                    onChange={(e) => {
+                        // Only allow digits, +, -, (, and )
+                        const cleaned = e.target.value.replace(/[^\d+\-()]/g, '')
+                        // Limit length to reasonable phone number
+                        if (cleaned.length <= 15) {
+                            setPhoneNumber(cleaned)
+                        }
+                    }}
+                    error={phoneNumber.length > 0 && !/^\+?[\d\-()]{10,15}$/.test(phoneNumber)}
+                    placeholder='+1 (555) 555-5555'
+                />
+                <FormHelperText
+                    error={phoneNumber.length > 0 && !/^\+?[\d\-()]{10,15}$/.test(phoneNumber)}
+                    sx={{
+                        marginTop: 0
+                    }}
+                >
+                    {phoneNumber.length > 0 && !/^\+?[\d\-()]{10,15}$/.test(phoneNumber)
+                        ? 'Please enter a valid phone number'
+                        : ''}
+                </FormHelperText>
+
                 <FormControlLabel
                     control={<Checkbox checked={isAgreed} onChange={handleAgreementChange} />}
                     label={

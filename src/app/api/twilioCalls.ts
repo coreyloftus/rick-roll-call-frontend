@@ -23,9 +23,9 @@ export async function getTwilioStatus() {
             'Access-Control-Allow-Origin': '*'
         }
     })
-    console.log('twilioStatus response:', res)
     const resData = (await res.json()) as TwilioStatusResponse
-    if (resData.status === 'success') {
+    console.log('twilioStatus response:', resData)
+    if (resData.status === 'active') {
         return true
     } else {
         return false
