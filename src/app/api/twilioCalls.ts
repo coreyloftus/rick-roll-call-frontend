@@ -1,5 +1,5 @@
 import { devBaseEndpoint } from './constants'
-import { TwilioStatusResponse } from './types/twilioCalls'
+import { TwilioCallStatusResponse, TwilioStatusResponse } from './types/twilioCalls'
 
 interface TwilioCallParams {
     to_phone_number: string
@@ -35,4 +35,17 @@ export async function getTwilioStatus() {
     } else {
         return false
     }
+}
+
+export async function getTwilioCallStatus(callId: string) {
+    const res = await fetch(`${devBaseEndpoint}/twilio/status/${callId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        }
+    })
+    const resData = (await res.json()) as TwilioCallStatusResponse
+    console.log('twilioCallStatus response:', resData)
+    return resData
 }

@@ -31,3 +31,9 @@ export interface TwilioStatusResponse {
     type: string
     uri: string
 }
+
+export interface TwilioCallStatusResponse {
+    status: 'queued' | 'in_progress' | 'completed' | 'failed'
+    error: string | null
+    call_id: string
+}

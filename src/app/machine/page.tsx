@@ -132,7 +132,7 @@ const Page = () => {
                     </Accordion> */}
                     <Accordion>
                         <AccordionSummary>
-                            <Typography variant='h6'>Audio Player</Typography>
+                            <Typography variant='h6'>Make Some Audio</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                             <GenAudioBox setPublicAudioUrl={setPublicAudioUrl} />
@@ -149,7 +149,7 @@ const Page = () => {
                                     width: '100%'
                                 }}
                             >
-                                <Typography variant='h6'>Make Twilio Call You</Typography>
+                                <Typography variant='h6'>Rick Roll Yourself</Typography>
                                 <Badge
                                     color={twilioStatus ? 'success' : 'error'}
                                     variant='dot'
