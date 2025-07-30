@@ -1,103 +1,179 @@
-import Image from "next/image";
+'use client'
+import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Typography } from '@mui/material'
+import { useEffect, useState } from 'react'
+import { backendSanityCheck } from './api/googleCalls'
+import TwilioBox from './components/TwilioBox'
+import GenAudioBox from './components/GenAudioBox'
+import { getTwilioStatus } from './api/twilioCalls'
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+const Page = () => {
+    const [sanityCheckSuccess, setSanityCheckSuccess] = useState(false)
+    const [publicAudioUrl, setPublicAudioUrl] = useState('')
+    const [twilioStatus, setTwilioStatus] = useState(false)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    const checkTwilioStatus = async () => {
+        const status = await getTwilioStatus()
+        setTwilioStatus(status)
+    }
+
+    const sanityCheckSubmit = async () => {
+        try {
+            const res = await backendSanityCheck()
+            if (res.ok) {
+                setSanityCheckSuccess(true)
+            }
+        } catch (e) {
+            console.error('sanity check failed:', e)
+            setSanityCheckSuccess(false)
+        }
+    }
+
+    useEffect(() => {
+        sanityCheckSubmit()
+        checkTwilioStatus()
+    }, [])
+    return (
+        <>
+            <Box
+                sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '100vh'
+                }}
+            >
+                <Box sx={{ border: 1, p: 2, borderRadius: 2, width: '85vw', gap: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                            <Typography sx={{ flexGrow: 1 }} variant='h4'>
+                                Rick Roll Call
+                            </Typography>
+                            <Badge
+                                color={sanityCheckSuccess ? 'success' : 'error'}
+                                variant='dot'
+                                sx={{
+                                    '& .MuiBadge-dot': {
+                                        transform: 'translate(50%, -200%)',
+                                        top: 0,
+                                        right: 0,
+                                        height: 16,
+                                        width: 16,
+                                        borderRadius: '50%'
+                                    }
+                                }}
+                            />
+                        </Box>
+                        <Typography variant='h5'>
+                            {
+                                'Write some text. Enter your phone number. Then, get a call from an AI voice speaking out the text you wrote.'
+                            }
+                        </Typography>
+                        <Typography variant='body1'>{`Please only use this for good and mischief.`}</Typography>
+                    </Box>
+
+                    {/* <Accordion>
+                        <AccordionSummary>
+                            <Typography variant='h6'>Gemini Connection Test</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <TextField
+                                id='ai-text-input'
+                                label='AI Text Input'
+                                variant='outlined'
+                                fullWidth
+                                placeholder='Enter your text here...'
+                                value={geminiTextValue}
+                                onChange={(e) => setGeminiTextValue(e.target.value)}
+                                error={badWordDict.includes(geminiTextValue)}
+                                helperText={
+                                    badWordDict.includes(geminiTextValue) ? 'Please avoid using bad words.' : ''
+                                }
+                                // change color of input text to white if in dark mode
+                                sx={{
+                                    input: { color: `${darkMode ? 'white' : 'black'}` },
+                                    label: { color: `${darkMode ? 'white' : 'black'}` },
+                                    '& .MuiOutlinedInput-root': {
+                                        '& fieldset': {
+                                            borderColor: `${darkMode ? 'white' : 'black'}`
+                                        },
+                                        '&:hover fieldset': {
+                                            borderColor: `${darkMode ? 'gray' : 'darkgray'}`
+                                        },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: `${darkMode ? 'lightblue' : 'blue'}`
+                                        }
+                                    },
+                                    '& .MuiInputLabel-root': {
+                                        color: `${darkMode ? 'white' : 'black'}`
+                                    },
+                                    '& .MuiInputLabel-root.Mui-focused': {
+                                        color: `${darkMode ? 'lightblue' : 'blue'}`
+                                    },
+                                    '& .MuiInputBase-input::placeholder': {
+                                        color: `${darkMode ? 'gray' : 'darkgray'}`
+                                    }
+                                }}
+                            />
+                            <Button variant='contained' color='primary' onClick={(e) => handleTextSubmit(e)}>
+                                Submit
+                            </Button>
+                            <Box sx={{ mt: 6, width: '100%' }}>
+                                <Typography variant='h6' sx={{ textAlign: 'left' }}>
+                                    Gemini Reply:
+                                </Typography>
+                                <Box sx={{ ml: 4 }}>
+                                    <ReactMarkdown>{geminiReply}</ReactMarkdown>
+                                </Box>
+                            </Box>
+                        </AccordionDetails>
+                    </Accordion> */}
+                    <Accordion>
+                        <AccordionSummary>
+                            <Typography variant='h6'>Make Some Audio</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <GenAudioBox setPublicAudioUrl={setPublicAudioUrl} />
+                        </AccordionDetails>
+                    </Accordion>
+                    <Accordion>
+                        <AccordionSummary>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    gap: 2,
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    width: '100%'
+                                }}
+                            >
+                                <Typography variant='h6'>Rick Roll Yourself</Typography>
+                                <Badge
+                                    color={twilioStatus ? 'success' : 'error'}
+                                    variant='dot'
+                                    sx={{
+                                        '& .MuiBadge-dot': {
+                                            transform: 'translate(50%, -150%)',
+                                            top: 0,
+                                            right: 0,
+                                            height: 16,
+                                            width: 16,
+                                            borderRadius: '50%'
+                                        }
+                                    }}
+                                />
+                            </Box>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <TwilioBox audioUrl={publicAudioUrl} />
+                        </AccordionDetails>
+                    </Accordion>
+                </Box>
+            </Box>
+        </>
+    )
 }
+
+export default Page

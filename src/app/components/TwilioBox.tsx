@@ -1,4 +1,5 @@
 import { getTwilioCallStatus, twilioCall } from '@/app/api/twilioCalls'
+import { TwilioCallState } from '@/app/api/types/twilioCalls'
 import {
     Box,
     Button,
@@ -24,10 +25,13 @@ export default function TwilioBox({ audioUrl }: TwilioBoxProps) {
     const [isAgreed, setIsAgreed] = useState(false)
     const termsLinkRef = useRef<HTMLButtonElement>(null)
     const [phoneNumber, setPhoneNumber] = useState('')
-    const [twilioCallState, setTwilioCallState] = useState({
-        status: null as 'queued' | 'in_progress' | 'completed' | 'failed' | null,
-        error: null as string | null,
-        callId: null as string | null
+    const [twilioCallState, setTwilioCallState] = useState<TwilioCallState>({
+        success: false,
+        status: null,
+        error: '',
+        message: '',
+        audio_file_url: null,
+        call_sid: null
     })
     const [isPhoneValid, setIsPhoneValid] = useState(false)
     const consentLanguageText =
@@ -35,32 +39,57 @@ export default function TwilioBox({ audioUrl }: TwilioBoxProps) {
 
     const handleCallTwilio = async () => {
         console.log('handleCallTwilio called')
-        const res = await twilioCall({ to_phone_number: phoneNumber, audio_file_url: audioUrl })
-        if (res.ok) {
-            const resJSON = await res.json()
+        const res = await twilioCall({
+            to_phone_number: phoneNumber,
+            audio_file_url: audioUrl
+        })
+        if (res.success) {
             setTwilioCallState({
-                status: resJSON.status,
-                error: resJSON.error,
-                callId: resJSON.call_id
+                success: true,
+                message: res.message,
+                audio_file_url: res.audio_file_url,
+                call_sid: res.call_sid,
+                status: 'queued' as TwilioCallState['status'],
+                error: null
             })
         } else {
+            setTwilioCallState({
+                success: false,
+                error: res.message,
+                message: res.message,
+                audio_file_url: null,
+                call_sid: null,
+                status: 'failed' as TwilioCallState['status']
+            })
             console.error('twilioCall response:', res)
         }
     }
     // get twilio call status every 3 seconds, update twilioCallState
     useEffect(() => {
-        const interval = setInterval(async () => {
-            if (twilioCallState.callId) {
-                const status = await getTwilioCallStatus(twilioCallState.callId)
-                setTwilioCallState({
-                    ...twilioCallState,
-                    status: status.status,
-                    error: status.error,
-                    callId: status.call_id
-                })
-            }
-        }, 3000)
-        return () => clearInterval(interval)
+        if (twilioCallState.call_sid && twilioCallState.status !== 'completed' && twilioCallState.status !== 'failed') {
+            console.log(`polling for call status ${twilioCallState.call_sid}`)
+            const interval = setInterval(async () => {
+                if (twilioCallState.call_sid) {
+                    const res = await getTwilioCallStatus(twilioCallState.call_sid)
+                    console.log('twilioCallStatus response:', res)
+                    if (res.success) {
+                        setTwilioCallState({
+                            ...twilioCallState,
+                            status: res.status as TwilioCallState['status'],
+                            error: null,
+                            call_sid: res.call_sid
+                        })
+                    } else {
+                        setTwilioCallState({
+                            ...twilioCallState,
+                            status: 'failed',
+                            error: res.error
+                        })
+                    }
+                }
+            }, 3000)
+            return () => clearInterval(interval)
+        }
     }, [twilioCallState])
 
     const handleOpenTerms = () => {
@@ -178,7 +207,7 @@ export default function TwilioBox({ audioUrl }: TwilioBoxProps) {
                     Twilio Call Error: {twilioCallState.error}
                 </Typography>
                 <Typography variant='body2' sx={{ mb: 2, color: 'text.secondary' }}>
-                    Twilio Call ID: {twilioCallState.callId}
+                    Twilio Call ID: {twilioCallState.call_sid}
                 </Typography>
             </Box>
 
