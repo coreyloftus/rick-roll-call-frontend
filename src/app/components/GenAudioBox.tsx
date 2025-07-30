@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Typography, Box, TextField, Button } from '@mui/material'
+import { Box, TextField, Button } from '@mui/material'
 import { gcsFileUpload, geminiAudio } from '@/app/api/googleCalls'
 import AudioPlayer from './AudioPlayer'
 
@@ -51,33 +51,41 @@ export default function GenAudioBox({ setPublicAudioUrl }: GenAudioBoxProps) {
 
     return (
         <>
-            <Typography variant='body1'>
-                {'Input your text and click submit to generate the audio. The audio will be played below.'}
-            </Typography>
-            <TextField
-                id='voice-input-text'
-                label='Voice Input Text'
-                variant='outlined'
-                placeholder='Enter your text here...'
-                value={voiceInputText}
-                onChange={(e) => setVoiceInputText(e.target.value)}
-                sx={{}}
-            ></TextField>
-            <Button variant='contained' color='primary' onClick={(e) => handleAudioTextSubmitToGemini(e)}>
-                Submit
-            </Button>
-            <Box>
-                <AudioPlayer audioData={audioData} />
-            </Box>
-            <Box>
-                <Button
-                    variant='contained'
-                    color='primary'
-                    onClick={handleAudioFileUploadToGCS}
-                    disabled={!audioData?.url}
-                >
-                    Upload Audio to GCS
-                </Button>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    p: 2,
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                }}
+            >
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <TextField
+                        id='voice-input-text'
+                        label='Text to turn into audio'
+                        variant='outlined'
+                        placeholder='Enter your text here...'
+                        value={voiceInputText}
+                        onChange={(e) => setVoiceInputText(e.target.value)}
+                        sx={{}}
+                    ></TextField>
+                    <Button variant='contained' color='primary' onClick={(e) => handleAudioTextSubmitToGemini(e)}>
+                        Generate Audio
+                    </Button>
+                </Box>
+
+                <Box sx={{ alignSelf: 'flex-end' }}>
+                    <AudioPlayer audioData={audioData} />
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={handleAudioFileUploadToGCS}
+                        disabled={!audioData?.url}
+                    >
+                        Confirm audio
+                    </Button>
+                </Box>
             </Box>
         </>
     )

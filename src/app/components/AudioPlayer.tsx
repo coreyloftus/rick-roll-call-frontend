@@ -157,7 +157,7 @@ export default function AudioPlayer({ audioData }: { audioData: AudioData | null
     // }
 
     if (!audioData) {
-        return <Typography>No audio yet.</Typography>
+        return <></>
     }
 
     return (
