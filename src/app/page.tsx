@@ -1,103 +1,83 @@
-import Image from "next/image";
+'use client'
+import { Badge, Box, Paper, Typography } from '@mui/material'
+import { useEffect, useState } from 'react'
+import { backendSanityCheck } from './api/googleCalls'
+import TwilioBox from './components/TwilioBox'
+import GenAudioBox from './components/GenAudioBox'
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+const Page = () => {
+    const [sanityCheckSuccess, setSanityCheckSuccess] = useState(false)
+    const [publicAudioUrl, setPublicAudioUrl] = useState('')
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    const sanityCheckSubmit = async () => {
+        try {
+            const res = await backendSanityCheck()
+            if (res.ok) {
+                setSanityCheckSuccess(true)
+            }
+        } catch (e) {
+            console.error('sanity check failed:', e)
+            setSanityCheckSuccess(false)
+        }
+    }
+
+    useEffect(() => {
+        sanityCheckSubmit()
+    }, [])
+    return (
+        <>
+            <Box
+                sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '100vh',
+                    minWidth: '85vw'
+                }}
+            >
+                <Box sx={{ border: 1, p: 2, borderRadius: 2, width: '100%' }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', mb: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Typography sx={{ flexGrow: 1 }} variant='h4'>
+                                Rick Roll Call
+                            </Typography>
+                            <Badge
+                                color={sanityCheckSuccess ? 'success' : 'error'}
+                                variant='dot'
+                                sx={{
+                                    '& .MuiBadge-dot': {
+                                        transform: 'translate(50%, -200%)',
+                                        top: 0,
+                                        right: 0,
+                                        height: 16,
+                                        width: 16,
+                                        borderRadius: '50%'
+                                    }
+                                }}
+                            />
+                        </Box>
+                        <Typography variant='h5'>
+                            {
+                                'Create personalized AI voice calls in seconds. Write your message, enter a number, and surprise someone with a custom voice call.'
+                            }
+                        </Typography>
+                    </Box>
+                    <Paper sx={{ p: 2, borderRadius: 2, mb: 2 }}>
+                        <Typography variant='h6'>1. Make Some Audio</Typography>
+                        <GenAudioBox setPublicAudioUrl={setPublicAudioUrl} />
+                    </Paper>
+
+                    <Paper sx={{ p: 2, borderRadius: 2 }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
+                            <TwilioBox audioUrl={publicAudioUrl} />
+                        </Box>
+                    </Paper>
+                </Box>
+            </Box>
+        </>
+    )
 }
+
+export default Page
