@@ -1,6 +1,7 @@
-import { devBaseEndpoint } from './constants'
 import { GCSFileUploadResponse, GeminiTextTestResponse } from './types/googleCalls'
 
+const devBaseEndpoint = process.env.DEV_BASE_ENDPOINT
+// const prodBaseEndpoint = process.env.PROD_BASE_ENDPOINT
 export async function backendSanityCheck() {
     console.log('backendSanityCheck called')
     const res = await fetch(`${devBaseEndpoint}/sanity_check`, {

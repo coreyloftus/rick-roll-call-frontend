@@ -1,6 +1,7 @@
-import { devBaseEndpoint } from './constants'
 import { TwilioCallResponse, TwilioCallStatusResponse, TwilioStatusResponse } from './types/twilioCalls'
 
+const devBaseEndpoint = process.env.DEV_BASE_ENDPOINT
+// const prodBaseEndpoint = process.env.PROD_BASE_ENDPOINT
 interface TwilioCallParams {
     to_phone_number: string
     audio_file_url: string
