@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { backendSanityCheck } from './api/googleCalls'
 import TwilioBox from './components/TwilioBox'
 import GenAudioBox from './components/GenAudioBox'
+import { CardBox } from './components/CardBox'
 
 const Page = () => {
     const [sanityCheckSuccess, setSanityCheckSuccess] = useState(false)
@@ -64,16 +65,7 @@ const Page = () => {
                             }
                         </Typography>
                     </Box>
-                    <Paper sx={{ p: 2, borderRadius: 2, mb: 2 }}>
-                        <Typography variant='h6'>1. Make Some Audio</Typography>
-                        <GenAudioBox setPublicAudioUrl={setPublicAudioUrl} />
-                    </Paper>
-
-                    <Paper sx={{ p: 2, borderRadius: 2 }}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
-                            <TwilioBox audioUrl={publicAudioUrl} />
-                        </Box>
-                    </Paper>
+                    <CardBox />
                 </Box>
             </Box>
         </>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, TextField, Button } from '@mui/material'
+import { Box, TextField, Button, Typography } from '@mui/material'
 import { gcsFileUpload, geminiAudio } from '@/app/api/googleCalls'
 import AudioPlayer from './AudioPlayer'
 
@@ -51,6 +51,7 @@ export default function GenAudioBox({ setPublicAudioUrl }: GenAudioBoxProps) {
 
     return (
         <>
+            <Typography variant='h6'>1. Make Some Audio</Typography>
             <Box
                 sx={{
                     display: 'flex',
