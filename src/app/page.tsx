@@ -1,9 +1,7 @@
 'use client'
-import { Badge, Box, Paper, Typography } from '@mui/material'
+import { Badge, Box, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { backendSanityCheck } from './api/googleCalls'
-import TwilioBox from './components/TwilioBox'
-import GenAudioBox from './components/GenAudioBox'
 import { CardBox } from './components/CardBox'
 
 const Page = () => {
@@ -38,7 +36,7 @@ const Page = () => {
                     minWidth: '85vw'
                 }}
             >
-                <Box sx={{ border: 1, p: 2, borderRadius: 2, width: '100%' }}>
+                <Box sx={{ p: 2, width: '100%' }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', mb: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Typography sx={{ flexGrow: 1 }} variant='h4'>
@@ -65,8 +63,8 @@ const Page = () => {
                             }
                         </Typography>
                     </Box>
-                    <CardBox />
                 </Box>
+                <CardBox />
             </Box>
         </>
     )

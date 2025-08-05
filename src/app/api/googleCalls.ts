@@ -1,10 +1,10 @@
 import { GCSFileUploadResponse, GeminiTextTestResponse } from './types/googleCalls'
 
-const devBaseEndpoint = process.env.DEV_BASE_ENDPOINT
-// const prodBaseEndpoint = process.env.PROD_BASE_ENDPOINT
+// const devBaseEndpoint = process.env.DEV_BASE_ENDPOINT
+const prodBaseEndpoint = process.env.PROD_BASE_ENDPOINT
 export async function backendSanityCheck() {
     console.log('backendSanityCheck called')
-    const res = await fetch(`${devBaseEndpoint}/sanity_check`, {
+    const res = await fetch(`${prodBaseEndpoint}/sanity_check`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -19,7 +19,7 @@ export async function backendSanityCheck() {
 }
 export async function geminiTest(req: string) {
     console.log('geminiTest called with req:', req)
-    const res = await fetch(`${devBaseEndpoint}/gemini/stream`, {
+    const res = await fetch(`${prodBaseEndpoint}/gemini/stream`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ export async function geminiTest(req: string) {
 
 export async function geminiAudio(req: string) {
     console.log(`${geminiAudio.name} called with req:`, req)
-    const res = await fetch(`${devBaseEndpoint}/gemini/audio`, {
+    const res = await fetch(`${prodBaseEndpoint}/gemini/audio`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ export async function gcsFileUpload(file: File) {
     // change this function to use formData and send the file as a form data object
     const formData = new FormData()
     formData.append('file', file)
-    const res = await fetch(`${devBaseEndpoint}/gcs/upload`, {
+    const res = await fetch(`${prodBaseEndpoint}/gcs/upload`, {
         method: 'POST',
         headers: {
             'Access-Control-Allow-Origin': '*'
