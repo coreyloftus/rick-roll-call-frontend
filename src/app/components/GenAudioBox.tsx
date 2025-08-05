@@ -50,44 +50,115 @@ export default function GenAudioBox({ setPublicAudioUrl }: GenAudioBoxProps) {
     }
 
     return (
-        <>
-            <Typography variant='h6'>1. Make Some Audio</Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Typography variant='body1' sx={{ textAlign: 'center', mb: 2 }}>
+                {` 🎵 Enter some text below and we'll generate custom audio using Google Gemini!`}
+            </Typography>
+
             <Box
                 sx={{
                     display: 'flex',
-                    flexDirection: 'row',
-                    p: 2,
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
+                    flexDirection: { xs: 'column', md: 'row' },
+                    gap: 3,
+                    alignItems: 'flex-start'
                 }}
             >
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <TextField
-                        id='voice-input-text'
-                        label='Text to turn into audio'
-                        variant='outlined'
-                        placeholder='Enter your text here...'
-                        value={voiceInputText}
-                        onChange={(e) => setVoiceInputText(e.target.value)}
-                        sx={{}}
-                    ></TextField>
-                    <Button variant='contained' color='primary' onClick={(e) => handleAudioTextSubmitToGemini(e)}>
-                        Generate Audio
-                    </Button>
+                <Box sx={{ flex: 1 }}>
+                    <form onSubmit={handleAudioTextSubmitToGemini}>
+                        <TextField
+                            id='voice-input-text'
+                            // label='✨ Your Message'
+                            placeholder='Make it so, number one!'
+                            multiline
+                            rows={4}
+                            value={voiceInputText}
+                            onChange={(e) => setVoiceInputText(e.target.value)}
+                            fullWidth
+                            sx={{
+                                mb: 2,
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '8px',
+                                    '& fieldset': {
+                                        borderColor: '#45E3FF',
+                                        borderWidth: '2px'
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#00FFFF'
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#FF6B9D'
+                                    }
+                                }
+                            }}
+                        />
+                        <Button
+                            type='submit'
+                            variant='contained'
+                            disabled={voiceInputText === ''}
+                            size='large'
+                            sx={{
+                                width: '100%',
+                                py: 1.5,
+                                fontSize: '1rem',
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            🎤 Generate Audio
+                        </Button>
+                    </form>
+
+                    {audioData?.url && (
+                        <Box sx={{ mt: 3 }}>
+                            <Button
+                                variant='contained'
+                                color='secondary'
+                                onClick={handleAudioFileUploadToGCS}
+                                size='large'
+                                sx={{
+                                    width: '100%',
+                                    py: 1.5,
+                                    fontSize: '1rem',
+                                    fontWeight: 'bold',
+                                    background: `linear-gradient(45deg, #45E3FF 30%, #FFE66D 90%)`,
+                                    '&:hover': {
+                                        background: `linear-gradient(45deg, #00FFFF 30%, #FFE66D 90%)`
+                                    }
+                                }}
+                            >
+                                ☁️ Upload to Cloud
+                            </Button>
+                        </Box>
+                    )}
                 </Box>
 
-                <Box sx={{ alignSelf: 'flex-end' }}>
-                    <AudioPlayer audioData={audioData} />
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        onClick={handleAudioFileUploadToGCS}
-                        disabled={!audioData?.url}
-                    >
-                        Confirm audio
-                    </Button>
+                <Box
+                    sx={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        minHeight: '200px',
+                        justifyContent: 'center'
+                    }}
+                >
+                    {audioData?.url ? (
+                        <AudioPlayer audioData={audioData} />
+                    ) : (
+                        <Box
+                            sx={{
+                                textAlign: 'center',
+                                color: 'text.secondary',
+                                opacity: 0.7
+                            }}
+                        >
+                            <Typography variant='h2' sx={{ mb: 1 }}>
+                                🔇
+                            </Typography>
+                            <Typography variant='body2'>Your audio will appear here.</Typography>
+                        </Box>
+                    )}
                 </Box>
             </Box>
-        </>
+        </Box>
     )
 }

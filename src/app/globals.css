@@ -1,26 +1,86 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --background: #ffffff;
+    --foreground: #171717;
+
+    /* 80s Color Palette */
+    --primary-pink: #ff6b9d;
+    --secondary-cyan: #45e3ff;
+    --accent-yellow: #ffe66d;
+    --deep-purple: #2d1b69;
+    --gradient-start: #ff9a9e;
+    --gradient-mid: #fecfef;
+    --gradient-end: #fecfef;
+    --neon-pink: #ff10f0;
+    --neon-cyan: #00ffff;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  /* --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono); */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    :root {
+        --background: #0a0a0a;
+        --foreground: #ededed;
+    }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-mid) 50%, var(--gradient-end) 100%);
+    background-attachment: fixed;
+    color: var(--deep-purple);
+    font-family: 'Orbitron', Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Retro Geometric Background Pattern */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 25px,
+            rgba(255, 255, 255, 0.08) 25px,
+            rgba(255, 255, 255, 0.08) 50px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 25px,
+            rgba(69, 227, 255, 0.05) 25px,
+            rgba(69, 227, 255, 0.05) 50px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 50px,
+            rgba(255, 107, 157, 0.03) 50px,
+            rgba(255, 107, 157, 0.03) 100px
+        );
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Additional geometric overlay for more complexity */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle at 25% 25%, rgba(255, 230, 109, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(69, 227, 255, 0.1) 0%, transparent 50%);
+    z-index: -1;
+    pointer-events: none;
 }

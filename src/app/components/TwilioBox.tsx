@@ -20,20 +20,15 @@ import { useEffect, useRef, useState } from 'react'
 
 interface TwilioBoxProps {
     audioUrl: string
+    twilioCallState: TwilioCallState
+    setTwilioCallState: (state: TwilioCallState) => void
+    onCallMade: () => void
 }
-export default function TwilioBox({ audioUrl }: TwilioBoxProps) {
+export default function TwilioBox({ audioUrl, twilioCallState, setTwilioCallState, onCallMade }: TwilioBoxProps) {
     const [isTermsOpen, setIsTermsOpen] = useState(false)
     const [isAgreed, setIsAgreed] = useState(false)
     const termsLinkRef = useRef<HTMLButtonElement>(null)
     const [phoneNumber, setPhoneNumber] = useState('')
-    const [twilioCallState, setTwilioCallState] = useState<TwilioCallState>({
-        success: false,
-        status: null,
-        error: '',
-        message: '',
-        audio_file_url: null,
-        call_sid: null
-    })
     const [isPhoneValid, setIsPhoneValid] = useState(false)
     const [twilioStatus, setTwilioStatus] = useState(false)
 
@@ -64,6 +59,8 @@ export default function TwilioBox({ audioUrl }: TwilioBoxProps) {
                 status: 'queued' as TwilioCallState['status'],
                 error: null
             })
+            // Advance to the call status card
+            onCallMade()
         } else {
             setTwilioCallState({
                 success: false,
@@ -135,14 +132,7 @@ export default function TwilioBox({ audioUrl }: TwilioBoxProps) {
     return (
         <>
             <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                    }}
-                >
-                    <Typography variant='h6'>2. Rick Roll Yourself</Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
                     <Badge
                         color={twilioStatus ? 'success' : 'error'}
                         variant='dot'
@@ -158,98 +148,93 @@ export default function TwilioBox({ audioUrl }: TwilioBoxProps) {
                         }}
                     />
                 </Box>
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
-                    <Box sx={{ width: '50%' }}>
-                        <Typography variant='body1'>
-                            Enter your phone number.
-                            <br />
-                            Twilio will call you and play your audio.
-                        </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, maxWidth: '500px', mx: 'auto' }}>
+                    <Typography variant='body1' sx={{ textAlign: 'center', mb: 2 }}>
+                        🎤 Enter your phone number below.
+                        <br />
+                        Twilio will call you and play your custom audio!
+                    </Typography>
 
-                        <FormGroup sx={{ py: 2 }}>
-                            <InputLabel>Your Phone Number</InputLabel>
-                            <Input
-                                type='tel'
-                                value={phoneNumber}
-                                onChange={(e) => {
-                                    // Only allow digits, +, -, (, and )
-                                    const cleaned = e.target.value.replace(/[^\d+\-()]/g, '')
-                                    // Limit length to reasonable phone number
-                                    if (cleaned.length <= 15) {
-                                        setPhoneNumber(cleaned)
-                                        setIsPhoneValid(cleaned.length === 0 || /^\+?[\d\-()]{10,15}$/.test(cleaned))
-                                    }
-                                }}
-                                error={!isPhoneValid}
-                                placeholder='+1 (555) 555-5555'
-                            />
-                            <FormHelperText
-                                error={phoneNumber.length > 0 && !/^\+?[\d\-()]{10,15}$/.test(phoneNumber)}
-                                sx={{
-                                    marginTop: 0
-                                }}
-                            >
-                                {phoneNumber.length > 0 && !/^\+?[\d\-()]{10,15}$/.test(phoneNumber)
-                                    ? 'Please enter a valid phone number'
-                                    : ''}
-                            </FormHelperText>
-
-                            <FormControlLabel
-                                control={<Checkbox checked={isAgreed} onChange={handleAgreementChange} />}
-                                label={
-                                    <Typography variant='body2'>
-                                        I agree to the{' '}
-                                        <Button
-                                            ref={termsLinkRef}
-                                            variant='text'
-                                            size='small'
-                                            onClick={handleOpenTerms}
-                                            sx={{
-                                                textDecoration: 'underline',
-                                                textTransform: 'none',
-                                                fontSize: 'inherit',
-                                                fontWeight: 'inherit',
-                                                minWidth: 'auto',
-                                                padding: 0,
-                                                '&:hover': {
-                                                    backgroundColor: 'transparent',
-                                                    textDecoration: 'underline'
-                                                }
-                                            }}
-                                        >
-                                            terms and conditions
-                                        </Button>{' '}
-                                        of the Twilio integration.
-                                    </Typography>
+                    <FormGroup>
+                        <InputLabel sx={{ mb: 1 }}>Your Phone Number</InputLabel>
+                        <Input
+                            type='tel'
+                            value={phoneNumber}
+                            onChange={(e) => {
+                                // Only allow digits, +, -, (, and )
+                                const cleaned = e.target.value.replace(/[^\d+\-()]/g, '')
+                                // Limit length to reasonable phone number
+                                if (cleaned.length <= 15) {
+                                    setPhoneNumber(cleaned)
+                                    setIsPhoneValid(cleaned.length === 0 || /^\+?[\d\-()]{10,15}$/.test(cleaned))
                                 }
-                            />
-                        </FormGroup>
+                            }}
+                            error={!isPhoneValid}
+                            placeholder='+1 (555) 555-5555'
+                            sx={{ mb: 1 }}
+                        />
+                        <FormHelperText error={phoneNumber.length > 0 && !/^\+?[\d\-()]{10,15}$/.test(phoneNumber)}>
+                            {phoneNumber.length > 0 && !/^\+?[\d\-()]{10,15}$/.test(phoneNumber)
+                                ? 'Please enter a valid phone number'
+                                : ''}
+                        </FormHelperText>
+                    </FormGroup>
 
-                        <Typography variant='body2' sx={{ mb: 2, color: 'text.secondary' }}>
-                            {audioUrl ? `Audio URL: ${audioUrl.slice(0, 75)}...` : '⬆️ Create an audio file first. ⬆️'}
-                        </Typography>
+                    <FormControlLabel
+                        control={<Checkbox checked={isAgreed} onChange={handleAgreementChange} />}
+                        label={
+                            <Typography variant='body2'>
+                                I agree to the{' '}
+                                <Button
+                                    ref={termsLinkRef}
+                                    variant='text'
+                                    size='small'
+                                    onClick={handleOpenTerms}
+                                    sx={{
+                                        textDecoration: 'underline',
+                                        textTransform: 'none',
+                                        fontSize: 'inherit',
+                                        fontWeight: 'inherit',
+                                        minWidth: 'auto',
+                                        padding: 0,
+                                        '&:hover': {
+                                            backgroundColor: 'transparent',
+                                            textDecoration: 'underline'
+                                        }
+                                    }}
+                                >
+                                    terms and conditions
+                                </Button>{' '}
+                                of the Twilio integration.
+                            </Typography>
+                        }
+                    />
 
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            onClick={handleCallTwilio}
-                            disabled={!isAgreed || !audioUrl || !isPhoneValid}
-                            sx={{ mb: 2 }}
-                        >
-                            Call Yourself
-                        </Button>
-                    </Box>
-                    <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <Typography variant='body2' sx={{ mb: 2, color: 'text.secondary' }}>
-                            Twilio Call State: {twilioCallState.status}
-                        </Typography>
-                        <Typography variant='body2' sx={{ mb: 2, color: 'text.secondary' }}>
-                            Twilio Call Error: {twilioCallState.error}
-                        </Typography>
-                        <Typography variant='body2' sx={{ mb: 2, color: 'text.secondary' }}>
-                            Twilio Call ID: {twilioCallState.call_sid}
-                        </Typography>
-                    </Box>
+                    <Typography
+                        variant='body2'
+                        sx={{
+                            textAlign: 'center',
+                            color: 'text.secondary',
+                            fontStyle: audioUrl ? 'normal' : 'italic'
+                        }}
+                    >
+                        {audioUrl ? '✅ Audio file ready to go!' : '⬆️ Create an audio file first ⬆️'}
+                    </Typography>
+
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={handleCallTwilio}
+                        disabled={!isAgreed || !audioUrl || !isPhoneValid}
+                        size='large'
+                        sx={{
+                            py: 2,
+                            fontSize: '1.1rem',
+                            fontWeight: 'bold'
+                        }}
+                    >
+                        🚀 Call Yourself
+                    </Button>
                 </Box>
             </Box>
             {/* Terms and Conditions Modal */}
